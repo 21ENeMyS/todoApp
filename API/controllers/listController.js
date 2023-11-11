@@ -27,3 +27,48 @@ exports.findAll = async (req, res) => {
   const list = await List.find();
   res.send(list);
 };
+
+// Menampilkan satu data
+exports.findOne = async (req, res) => {
+  // cari masukan parameter data
+  const title = req.params;
+  // jika ditemukan sebuah data yang sama dengan parameter yang dikirim
+  await List.findOne(title)
+    // maka tampilkan sebuah data dengan parameter yang sama
+    .then((data) => {
+      return res.status(200).send(data);
+    })
+    // jika tidak ada maka tidak ditemukan
+    .catch((err) => {
+      return res.status(400).json({ message: "Gagal menampilkan sebuah data" });
+    });
+};
+
+exports.deleteList = async (req, res) => {
+  const title = req.params.title;
+  // mencari data dan jika ketemu data tersebut maka hapus data
+  await List.findOneAndDelete({ title })
+    .then((data) => {
+      return res.status(200).json({ message: `${title} berhasil dihapus` });
+    })
+    .catch((err) => {
+      return res.status(400).json({ message: "Data gagal dihapus" });
+    });
+};
+
+exports.editList = async (req, res) => {
+  // data query
+  const title = req.params.title;
+
+  // cari data jika data ada maka update
+  await List.findOneAndUpdate({ title }, req.body)
+    .then((data) => {
+      if (!data) {
+        return res.status(400).json({ message: "Data tidak" });
+      }
+      return res.status(200).send(data);
+    })
+    .catch((err) => {
+      return res.status(400).json({ message: "Terjadi kesalahan" });
+    });
+};
