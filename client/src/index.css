@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Roboto:wght@400;900&display=swap");
+
+.roboto {
+  font-family: "Roboto", sans-serif;
+}
+
+.poppins {
+  font-family: "Poppins", sans-serif;
+}
