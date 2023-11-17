@@ -30,3 +30,53 @@ exports.signup = async (req, res) => {
     return res.status(400).json({ message: errorHandler(error) });
   }
 };
+
+// Login
+exports.login = async (req, res) => {
+  // memasukan email dan password
+  const { email, password } = req.body;
+
+  try {
+    // cek data user di database
+    const user = await User.findOne({ email });
+    // jika data tersebut tidak ada makan akan gagal masuk
+    if (!user) {
+      return res.status(400).json({
+        message: `${user} email kamu tidak terdaftar. Silahkan ke halaman register untuk mendaftarkan email mu`,
+      });
+    }
+    // jika data ada di dalam database maka, cek password apakah sama ?
+    if (!user.authenticate(password)) {
+      return res
+        .status(400)
+        .json({ message: "Email dan password tidak valid" });
+    }
+    // jika sama maka kirimkan jsonwebtoken
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    // beri cookie selama 1 hari
+    res.cookie("token", token, { expiresIn: "1d" });
+    // tampilkan data yang sudah Login
+    const { _id, username, role, name } = user;
+    return res.json({
+      token,
+      user: {
+        _id,
+        role,
+        username,
+        name,
+        email,
+      },
+    });
+  } catch (error) {
+    return res.status(400).json({ message: errorHandler(error) });
+  }
+};
+
+// keluar akun
+exports.signout = async (req, res) => {
+  // hapus cookie dan berhasil keluar
+  res.clearCookie("token");
+  res.json({ message: "Signout success" });
+};

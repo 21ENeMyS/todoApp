@@ -1,10 +1,10 @@
 const User = require("../models/Users");
 
 exports.find = async (req, res) => {
-  const { name } = req.params;
-  console.log(User);
+  const { username } = req.params;
+  console.log(username);
   try {
-    const user = await User.findOne({ name });
+    const user = await User.findOne({ username });
     if (!user) {
       new Error(`${username} not found`);
     }
