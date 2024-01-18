@@ -10,10 +10,15 @@ const List = new mongoose.model(
         required: true,
       },
 
-      body: {
-        type: String,
-        required: true,
+      done: {
+        type: Boolean,
+        default: false,
       },
+
+      // body: {
+      //   type: String,
+      //   required: true,
+      // },
     },
     { timestamps: true }
   )

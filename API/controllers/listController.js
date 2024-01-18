@@ -2,15 +2,15 @@ const List = require("../models/List");
 
 exports.createList = async (req, res) => {
   // untuk memasukan data
-  const { title, body } = req.body;
+  const { title } = req.body;
   //? cek data apakah sudah terdaftar
-  const listExist = await List.findOne({ title: title.toLowerCase() });
+  const listExist = await List.findOne({ title });
   if (listExist) {
     // jika sudah terdaftar maka tampilkan String dibawah
     return res.status(400).json({ message: "Title ini sudah digunakan" });
   }
   // jika data belum terdaftar maka buatkan
-  const saveList = new List({ title: title.toLowerCase(), body });
+  const saveList = new List({ title });
   await saveList
     .save()
     .then((result) => {
@@ -58,17 +58,27 @@ exports.deleteList = async (req, res) => {
 
 exports.editList = async (req, res) => {
   // data query
-  const title = req.params.title;
+  try {
+    const title = req.params.title;
+    console.log(title);
+    const data = await List.findOneAndUpdate({ title: title }, { done: true });
+    if (!data) {
+      return res.status(400).json({ message: `${data} gagal di update` });
+    }
+    return res.status(200).send(data);
+  } catch (error) {
+    return res.status(400).json({ message: "Terjadi kesalahan" });
+  }
 
   // cari data jika data ada maka update
-  await List.findOneAndUpdate({ title }, req.body)
-    .then((data) => {
-      if (!data) {
-        return res.status(400).json({ message: "Data tidak" });
-      }
-      return res.status(200).send(data);
-    })
-    .catch((err) => {
-      return res.status(400).json({ message: "Terjadi kesalahan" });
-    });
+  // await List.findOneAndUpdate({ title }, req.body)
+  //   .then((data) => {
+  //     if (!data) {
+  //       return res.status(400).json({ message: "Data tidak" });
+  //     }
+  //     return res.status(200).send(data);
+  //   })
+  //   .catch((err) => {
+  //     return res.status(400).json({ message: "Terjadi kesalahan" });
+  //   });
 };
